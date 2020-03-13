@@ -340,34 +340,50 @@ p
 
 <p><img src="http://upload-images.jianshu.io/upload_images/3947437-ec14c4cda654c114.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""/></p>
 
-<pre><code>&gt; # 单侧检验（优于0.55）p值计算
-&gt; # 即仅计算上图中右尾部分，为sum(P(X&gt;=9))
-&gt; size = 10  # 独立重复试验次数
-&gt; prob = 0.55  # 每次成功的概率
-&gt; test_x = 9  # 实际成功次数
-&gt; x_range &lt;- seq(0, size, by=1)
-&gt; p_range &lt;- dbinom(prob=prob, size=size, x=x_range)
-&gt; p_value &lt;- sum(p_range[x_range&gt;=size])
-&gt; p_value
+<pre><code># 单侧检验（优于0.55）p值计算
+
+# 即仅计算上图中右尾部分，为sum(P(X&gt;=9))
+
+size = 10  # 独立重复试验次数
+
+prob = 0.55  # 每次成功的概率
+
+test_x = 9  # 实际成功次数
+
+x_range &lt;- seq(0, size, by=1)
+
+p_range &lt;- dbinom(prob=prob, size=size, x=x_range)
+
+p_value &lt;- sum(p_range[x_range&gt;=size])
+
+p_value
 [1] 0.002532952
 </code></pre>
 
 <ul>
 <li>双侧侧检验<br/>
-把上题中的问题改为两种手术方法有无差异，则使用双侧检验，p值为sum(P(X=i)) where P(X=i) &lt;= P(X=9)，而不是t检验中简单的单侧检验乘2，因为<strong>二项分布可能是不对称的</strong>
-<code>
-&gt; # 双侧p值计算
-&gt; # 计算上图中左尾和右尾概率之和，sum(P(X=i)) where P(X=i) &lt;= P(X=9))
-&gt; size = 10  # 独立重复试验次数
-&gt; prob = 0.55  # 每次成功的概率
-&gt; test_x = 9  # 实际成功次数
-&gt; x_range &lt;- seq(0, size, by=1)
-&gt; p_range &lt;- dbinom(prob=prob, size=size, x=x_range)
-&gt; p_value &lt;- sum(p_range[p_range&lt;=p_range[x_range==test_x]])
-&gt; p_value
-[1] 0.02775935
-</code></li>
+把上题中的问题改为两种手术方法有无差异，则使用双侧检验，p值为sum(P(X=i)) where P(X=i) &lt;= P(X=9)，而不是t检验中简单的单侧检验乘2，因为<strong>二项分布可能是不对称的</strong></li>
 </ul>
+
+<pre><code># 双侧p值计算
+
+# 计算上图中左尾和右尾概率之和，sum(P(X=i)) where P(X=i) &lt;= P(X=9))
+
+size = 10  # 独立重复试验次数
+
+prob = 0.55  # 每次成功的概率
+
+test_x = 9  # 实际成功次数
+
+x_range &lt;- seq(0, size, by=1)
+
+p_range &lt;- dbinom(prob=prob, size=size, x=x_range)
+
+p_value &lt;- sum(p_range[p_range&lt;=p_range[x_range==test_x]])
+
+p_value
+[1] 0.02775935
+</code></pre>
 
 <h6>正态近似法</h6>
 
@@ -426,20 +442,25 @@ X的取值只与观测单位的大小有关，而与观测单位的位置无关�
 <li>n很大pi很小，且npi=lambda时，二项分布近似Poisson分布</li>
 <li>lambda增大时，Poisson分布渐近正态分布，lambda&gt;=20时可作为正态分布</li>
 <li>Possion分布具有可加性（和正态分布类似），但不具有可乘性（可由X取值和均数，方差看出）</li>
-<li>Poisson分布的图形，若lambda时整数，则在X=lambda和X=lambda-1处有最大概率
-<code>
-lambda &lt;- 1:6
-x &lt;- 1:(2*max(lambda+1))
-data &lt;- data.frame(x=rep(x, times=length(lambda)), 
-               lambda=factor(rep(lambda, each=length(x))), 
-               prob=dpois(x, rep(lambda, each=length(x))))
-library(ggplot2)
-ggplot(data, aes(x=x, y=prob, color=lambda, group=lambda))+
-geom_point(size=2)+geom_line(lwd=1)+
-scale_x_continuous(breaks=floor(seq(min(x), max(x), by=((max(x)-min(x))/20))))
-</code>
-<img src="http://upload-images.jianshu.io/upload_images/3947437-d5192329a817e1c6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""/></li>
+<li>Poisson分布的图形，若lambda时整数，则在X=lambda和X=lambda-1处有最大概率</li>
 </ol>
+
+<pre><code>lambda &lt;- 1:6
+
+x &lt;- 1:(2*max(lambda+1))
+
+data &lt;- data.frame(x=rep(x, times=length(lambda)), 
+                   lambda=factor(rep(lambda, each=length(x))), 
+                   prob=dpois(x, rep(lambda, each=length(x))))
+
+library(ggplot2)
+
+ggplot(data, aes(x=x, y=prob, color=lambda, group=lambda))+
+  geom_point(size=2)+geom_line(lwd=1)+
+  scale_x_continuous(breaks=floor(seq(min(x), max(x), by=((max(x)-min(x))/20))))
+</code></pre>
+
+<p><img src="http://upload-images.jianshu.io/upload_images/3947437-d5192329a817e1c6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""/></p>
 
 <h4>2.3 Poisson分布的应用</h4>
 
@@ -449,7 +470,7 @@ scale_x_continuous(breaks=floor(seq(min(x), max(x), by=((max(x)-min(x))/20))))
 
 <p>例：1立升空气测得粉尘粒子数为21，估计改车间平均每立升空气粉尘颗粒的95%和99%可信区间</p>
 
-<pre><code>&gt; exactci::poisson.exact(21, plot=T, conf.level=0.95)
+<pre><code>exactci::poisson.exact(21, plot=T, conf.level=0.95)
 
     Exact two-sided Poisson test (central method)
 
@@ -462,7 +483,7 @@ sample estimates:
 event rate 
         21 
 
-&gt; exactci::poisson.exact(21, plot=T, conf.level=0.99)
+exactci::poisson.exact(21, plot=T, conf.level=0.99)
 
     Exact two-sided Poisson test (central method)
 
@@ -475,7 +496,7 @@ sample estimates:
 event rate 
         21 
 
-&gt; poisson.test(20, alternative=&quot;two.sided&quot;, conf.level=0.95)
+poisson.test(20, alternative=&quot;two.sided&quot;, conf.level=0.95)
 
     Exact Poisson test
 
@@ -488,7 +509,7 @@ sample estimates:
 event rate 
         20 
 
-&gt; poisson.test(20, alternative=&quot;two.sided&quot;, conf.level=0.99)
+poisson.test(20, alternative=&quot;two.sided&quot;, conf.level=0.99)
 
     Exact Poisson test
 
@@ -523,13 +544,14 @@ event rate
 # 120名吸烟孕妇生育的120名小孩中有4人患病，
 # 判断吸烟是否会增加后代患病率？
 # 单侧检验
-&gt; pi = 0.008
-&gt; n = 120
-&gt; X = 4
-&gt; lambda = n * pi
-&gt; sum(dpois(x=seq(X, n, by=1), lambda=lambda))
+pi = 0.008
+n = 120
+X = 4
+lambda = n * pi
+sum(dpois(x=seq(X, n, by=1), lambda=lambda))
 [1] 0.01663305
-&gt; poisson.test(x=4, r=lambda, alternative=&quot;greater&quot;)
+
+poisson.test(x=4, r=lambda, alternative=&quot;greater&quot;)
 
     Exact Poisson test
 
@@ -542,7 +564,7 @@ sample estimates:
 event rate 
          4 
 
-&gt; exactci::poisson.exact(x=4, r=lambda, alternative=&quot;greater&quot;, plot=TRUE)
+exactci::poisson.exact(x=4, r=lambda, alternative=&quot;greater&quot;, plot=TRUE)
 
     Exact one-sided Poisson rate test
 
